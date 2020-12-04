@@ -5,6 +5,7 @@ from pvlib.modelchain import ModelChain
 import pvlib
 import pandas as pd
 
+
 def get_solar_data():
 	### Set up parameters for PV model ###
 	#copied from examples for the following lines
@@ -13,9 +14,7 @@ def get_solar_data():
 	sapm_inverters = pvlib.pvsystem.retrieve_sam('cecinverter')
 	temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm']['open_rack_glass_glass']
 	inverter = sapm_inverters['ABB__MICRO_0_25_I_OUTD_US_208__208V_']
-	system = PVSystem(module_parameters=module,
-										inverter_parameters=inverter,
-										temperature_model_parameters=temperature_model_parameters)
+	system = PVSystem(module_parameters=module, inverter_parameters=inverter,temperature_model_parameters=temperature_model_parameters)
 										
 	#set up location and time ###
 	coordinates = [(41.881832, -87.623177, 'Chicago', 594, 'Etc/GMT+6')] #set up chicago as location
@@ -24,11 +23,10 @@ def get_solar_data():
 	### Get hourly solar power generation ###
 	for latitude, longitude, name, altitude, timezone in coordinates:
 			times = naive_times.tz_localize(timezone)
-			location = Location(latitude, longitude, name=name, altitude=altitude,
-													tz=timezone)
+			location = Location(latitude, longitude, name=name, altitude=altitude,tz=timezone)
 			weather = location.get_clearsky(times)
-			mc = ModelChain(system, location,
-											orientation_strategy='south_at_latitude_tilt')
+			mc = ModelChain(system, location, orientation_strategy='south_at_latitude_tilt')
 			mc.run_model(weather)
 			
 	return mc.ac
+
