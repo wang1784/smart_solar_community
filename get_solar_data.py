@@ -19,7 +19,7 @@ def get_solar_data():
 										
 	#set up location and time ###
 	coordinates = [(41.881832, -87.623177, 'Chicago', 594, 'Etc/GMT+6')] #set up chicago as location
-	naive_times = pd.date_range(start='2015', end='2016', freq='1h') #set up time frame and frequency as 1 hour
+	naive_times = pd.date_range(start='2011', end='2018', freq='1h') #set up time frame and frequency as 1 hour
 
 	### Get hourly solar power generation ###
 	for latitude, longitude, name, altitude, timezone in coordinates:

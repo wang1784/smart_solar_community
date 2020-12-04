@@ -61,3 +61,27 @@ class Q_Learning_Agent(object):
             self.episodes.append(transitions)
 
 
+##### TONIA'S Q-LEARNING FUNCTIONS #####
+def q_learning(self):
+    self.initialize()
+    time_steps = 0
+    num_of_episode = []  # record which episode each time step is on
+    episode_counts = 0  # start episode count from 0
+    while time_steps <= 8000:
+        state = self.start
+        while state != self.goal:
+            q_s = self.q[state[0], state[1]]
+            action_s, __ = self.choose_action_from_q(q_s)
+            sprime = self.get_sprime(state, action_s)
+            reward = self.rewards[state[0], state[1], action_s]
+            q_sprime = self.q[sprime[0], sprime[1]]
+
+            #update q and state
+            self.q[state[0], state[1], action_s] = self.q[state[0], state[1], action_s] + self.alpha * (reward + max(q_sprime) - self.q[state[0], state[1], action_s]) #q update
+            state = sprime
+
+            #update increments
+            time_steps += 1
+            num_of_episode.append(episode_counts)
+        episode_counts += 1
+    return num_of_episode
