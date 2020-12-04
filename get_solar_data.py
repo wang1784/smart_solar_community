@@ -28,6 +28,7 @@ def get_solar_data():
 			weather = location.get_clearsky(times)
 			mc = ModelChain(system, location, orientation_strategy='south_at_latitude_tilt')
 			mc.run_model(weather)
-			
-	return mc.ac
+	df = pd.DataFrame(mc.ac)
+
+	return df
 
