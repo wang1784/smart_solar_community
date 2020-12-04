@@ -16,7 +16,9 @@ def get_solar_data():
 	sapm_inverters = pvlib.pvsystem.retrieve_sam('cecinverter')
 	temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm']['open_rack_glass_glass']
 	inverter = sapm_inverters['ABB__MICRO_0_25_I_OUTD_US_208__208V_']
-	system = PVSystem(module_parameters=module, inverter_parameters=inverter,temperature_model_parameters=temperature_model_parameters)
+	system = PVSystem(module_parameters=module, inverter_parameters=inverter,
+					  temperature_model_parameters=temperature_model_parameters,
+					  modules_per_string=2)
 										
 	#set up location and time ###
 	coordinates = [(41.881832, -87.623177, 'Chicago', 594, 'Etc/GMT+6')] #set up chicago as location
@@ -36,8 +38,10 @@ def get_solar_data():
 df = get_solar_data()
 df.columns = ['solar_power']
 print(df.describe())
-df['binned'] = pd.cut(x=df['solar_power'], bins=[-0.75,0,100,200])
+#plt.bar(df['2013'].index, df['2013'].solar_power)
+#plt.show()
+df['binned'] = pd.cut(x=df['solar_power'], bins=[-0.75,0,50,100,150,200,250])
 df['solar_bin'] = pd.cut(x = df['solar_power'],
-                        bins = [-0.75,0,100,200],
-                        labels = [0, 1, 2])
+                        bins = [-0.75,0,50,100,150,200,250],
+                        labels = [0, 1, 2,3,4,5])
 print(df['solar_bin'].value_counts())
