@@ -5,6 +5,7 @@ from pvlib.location import Location
 from pvlib.modelchain import ModelChain
 import pvlib
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 def get_solar_data():
@@ -32,3 +33,11 @@ def get_solar_data():
 
 	return df
 
+df = get_solar_data()
+df.columns = ['solar_power']
+print(df.describe())
+df['binned'] = pd.cut(x=df['solar_power'], bins=[-0.75,0,100,200])
+df['solar_bin'] = pd.cut(x = df['solar_power'],
+                        bins = [-0.75,0,100,200],
+                        labels = [0, 1, 2])
+print(df['solar_bin'].value_counts())
