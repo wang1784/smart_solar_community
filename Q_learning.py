@@ -7,10 +7,17 @@ import numpy as np
 
 #Danielle Q learning agent from HW 5
 
+
+Transition = namedtuple('Transition', ['state1',
+                                       'action',
+                                       'reward',
+                                       'state2'])
+
+
 class Q_Learning_Agent(object):
     def __init__(self, env, actions, alpha=0.5, epsilon=0.1, gamma=1):
-        self._env = env
-        self._actions = actions
+        self._env = env #should have function that outputs state and reward
+        self._actions = actions #list of actions
         self._alpha = alpha
         self._epsilon = epsilon
         self._gamma = gamma
@@ -60,6 +67,17 @@ class Q_Learning_Agent(object):
             transitions = self.play_episode()
             self.episodes.append(transitions)
 
+def evaluate(agent):
+    agent.learn()
+
+    total_rewards = []
+    episode_ids = []
+    for e_id, episode in enumerate(agent.episodes):
+        rewards = map(lambda e: e.reward, episode)
+        total_rewards.append(sum(rewards))
+        episode_ids.extend([e_id] * len(episode))
+
+    return episode_ids
 
 ##### TONIA'S Q-LEARNING FUNCTIONS #####
 def q_learning(self):
