@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="86598452-b24a-4ec5-be3e-e847f6ddd5f3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/get_solar_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_solar_data.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -136,7 +134,7 @@
       <workItem from="1607054731409" duration="623000" />
       <workItem from="1607087887779" duration="24000" />
       <workItem from="1607088058944" duration="13009000" />
-      <workItem from="1607112443938" duration="2169000" />
+      <workItem from="1607112443938" duration="2621000" />
     </task>
     <servers />
   </component>
