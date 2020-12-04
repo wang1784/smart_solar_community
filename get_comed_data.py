@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 ###use chicago_hourly function to get a dataframe of hourly consumption per account
 
@@ -37,5 +38,9 @@ class get_comed_data():
         return self.comed
 
 
-df_chicago_hourly = get_comed_data().account_hourly()
-print(df_chicago_hourly.head())
+df_hourly = get_comed_data().account_hourly()
+df_hourly.set_index('Datetime', inplace = True)
+print(df_hourly.head())
+
+plt.bar(df_hourly.index, df_hourly.COMED_W)
+plt.show()
