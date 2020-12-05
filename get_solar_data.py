@@ -35,7 +35,8 @@ class solar_data():
 
 
 	def output_to_csv(self):
-		self.df.to_csv('solar_data.csv')
+		print('Doing it')
+		self.df.to_csv('~/Documents/GitHub/smart_solar_community/solar_data.csv')
 
 	def bins(self):
 		df = get_solar_data()
@@ -49,4 +50,6 @@ class solar_data():
 								labels = [0, 1, 2,3,4,5])
 		print(df['solar_bin'].value_counts())
 
-solar_data().output_to_csv()
+test= solar_data()
+test.get_solar_data()
+test.output_to_csv()
