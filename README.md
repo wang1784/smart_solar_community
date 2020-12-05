@@ -10,8 +10,8 @@
 Reinforcement learning algorithm that optimizes the distribution of solar power within a community that shares solar so that the total amount of electricity drawn from the grid is minimized. 
 
 ## Data Sources
-Install the PVlib library to generate solar data [a link](https://pvlib-python.readthedocs.io/en/latest/introtutorial.html)
-Existing electricity usage data taken from the COMED region [a link](https://www.kaggle.com/robikscube/hourly-energy-consumption)
+* Install the PVlib library to generate solar data [a link](https://pvlib-python.readthedocs.io/en/latest/introtutorial.html)
+* Existing electricity usage data taken from the COMED region [a link](https://www.kaggle.com/robikscube/hourly-energy-consumption)
 
 ## Files
 
