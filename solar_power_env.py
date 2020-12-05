@@ -11,7 +11,7 @@ def combine_data():
     df_join = df_comed.join(df_solar, how = 'inner', sort = True)
     # print(df_comed.shape, df_solar.shape)
     # print(df_join.shape)
-    # print(df_join.head())
+    print(df_join.head())
 
 class solar_power_env():
     def __init__(self, df_join):
