@@ -17,8 +17,7 @@ class solar_data():
 		temperature_model_parameters = pvlib.temperature.TEMPERATURE_MODEL_PARAMETERS['sapm']['open_rack_glass_glass']
 		inverter = sapm_inverters['ABB__MICRO_0_25_I_OUTD_US_208__208V_']
 		system = PVSystem(module_parameters=module, inverter_parameters=inverter,
-						  temperature_model_parameters=temperature_model_parameters,
-						  modules_per_string=2)
+						  temperature_model_parameters=temperature_model_parameters)
 
 		#set up location and time ###
 		coordinates = [(41.881832, -87.623177, 'Chicago', 594, 'Etc/GMT+6')] #set up chicago as location
