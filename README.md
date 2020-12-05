@@ -1,4 +1,4 @@
-# smart_solar_community
+# Smart Solar Community
 
 ## Table of contents
 * [General info](#general-info)
