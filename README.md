@@ -13,7 +13,7 @@ Reinforcement learning algorithm that optimizes the distribution of solar power 
 Install the PVlib library to generate solar data [a link](https://pvlib-python.readthedocs.io/en/latest/introtutorial.html)
 Existing electricity usage data taken from the COMED region [a link](https://www.kaggle.com/robikscube/hourly-energy-consumption)
 
-##Files
+## Files
 
 
 
