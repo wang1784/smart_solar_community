@@ -35,12 +35,7 @@ class get_comed_data():
         total_acct = self.total_acct()
         self.comed['COMED_MW'] = self.comed['COMED_MW'] / total_acct * 1000000
         self.comed.rename(columns = {'COMED_MW':'COMED_W'}, inplace = True)
+        self.comed.set_index('Datetime', inplace = True)
         return self.comed
 
 
-df_hourly = get_comed_data().account_hourly()
-df_hourly.set_index('Datetime', inplace = True)
-print(df_hourly.head())
-
-plt.bar(df_hourly.index, df_hourly.COMED_W)
-plt.show()
