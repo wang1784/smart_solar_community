@@ -14,7 +14,10 @@ Reinforcement learning algorithm that optimizes the distribution of solar power 
 * Existing electricity usage data taken from the COMED region [a link](https://www.kaggle.com/robikscube/hourly-energy-consumption)
 
 ## Files
-
+* [a relative link](get_comed_data.py): Gets usage data
+* [a relative link](get_solar_data.py): Generates solar data from 2011 to 2018 from PVlib
+* [a relative link](Q_learning.py): Class containing Q_learning agent
+* [a relative link](solor_power_env.py): Class that sets up solar environment and functions to get state and reward
 
 
 ## Sources
