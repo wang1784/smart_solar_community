@@ -48,7 +48,7 @@ class solar_power_env():
         self._comed_bin = [1900, 2800, 3100, 4500, 6500] #bins for
         self._data_step = 0 #row index to extract data from dataframe, starting with index 0
         p_init = self._data.iloc[0] #start with first line
-        self._state = [p_init['solar_bin'], p_init['comed_bin'], 0] #initiate state
+        self._state = (p_init['solar_bin'], p_init['comed_bin'], 0) #initiate state
 
         #state space shape
         self._state_space_shape = [len(self._solar_bin)-1, len(self._comed_bin)-1, len(self._battery_bin)-1]

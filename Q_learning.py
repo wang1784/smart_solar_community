@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 from collections import defaultdict, namedtuple
 from tqdm import tqdm
 import numpy as np
+import solar_power_env
+from solar_power_env import solar_power_env
 
 #Danielle Q learning agent from HW 5
 
@@ -25,9 +27,10 @@ class Q_Learning_Agent(object):
         # init q table
         self._q = {}
         action_vals = {a: 0 for a in self._actions}
-        for x in range(self._env.shape[0]):
-            for y in range(self._env.shape[1]):
-                self._q[(x, y)] = dict(action_vals)
+        for x in range(self._env._state_space_shape[0]):
+            for y in range(self._env._state_space_shape[1]):
+                for z in range(self._env._state_space_shape[1]):
+                    self._q[(x, y, z)] = dict(action_vals)
 
     def random_policy(self, state):
         return random.choice(self._actions)
@@ -45,21 +48,23 @@ class Q_Learning_Agent(object):
     def play_episode(self):
         s1 = self._env._state
         transitions = []
-        while True:
+        i = 0
+        while i <= 8760:
             a = self.e_greedy_policy(s1)
-            s2, r, term, _ = self._env.step(a)
-            
-            if term:
-                target = 0.0 #CHANGE THIS PART 
+            s2, r, term = self._env.step(a)
+
             self._q[s1][a] = self._q[s1][a] + self._alpha * (
                         r + self._gamma * np.max(self._q[s2][a])) - self._q[s1][a]
 
             s1 = s2
 
+            print(Transition(s1, a, r, s2))
             transitions.append(Transition(s1, a, r, s2))
 
             if term:
                 break
+            i += 1
+
         return transitions
 
     def learn(self, n_episodes=500):
@@ -103,3 +108,7 @@ def evaluate(agent):
 #             num_of_episode.append(episode_counts)
 #         episode_counts += 1
 #     return num_of_episode
+
+test=Q_Learning_Agent(solar_power_env(),actions=[0,1])
+test.play_episode()
+print(test._q)
