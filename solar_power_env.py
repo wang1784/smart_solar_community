@@ -51,7 +51,7 @@ class solar_power_env():
         self._state = [p_init['solar_bin'], p_init['comed_bin'], 0] #initiate state
 
         #state space shape
-        self._state_space_shape = (len(self._solar_bin)-1, len(self._comed_bin)-1, len(self._battery_bin)-1)
+        self._state_space_shape = [len(self._solar_bin)-1, len(self._comed_bin)-1, len(self._battery_bin)-1]
 
     #assemble state information
     def extract_from_table(self, item): #finds p_solar, p_comed, OR bin_solar, bin_comed
