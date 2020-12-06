@@ -33,7 +33,6 @@ def combine_data():
 
 class solar_power_env():
     def __init__(self, modules):
-        #df_join is the dataframe that contains data from COMED and SOLAR
         #modules is an integer for how many modules we want for each household
         self._data = combine_data()
         self._data = self._data['SOLAR_W'] * modules #multiply the solar generated per module by number of module to get total power generated
