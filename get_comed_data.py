@@ -38,4 +38,4 @@ class get_comed_data():
         self.comed.set_index('Datetime', inplace = True)
         return self.comed
 
-
+get_comed_data()
