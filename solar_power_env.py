@@ -22,7 +22,7 @@ def combine_data():
                                   bins = [1900, 2800, 3100, 4500, 6500],
                                   labels = [0, 1, 2, 3])
     #print dataframe info
-    # print(df_join.head())
+    # print(df_join.iloc[7:21])
     # print(df_join.describe())
     # print('comed\n', df_join['comed_bin'].value_counts())
     # print('solar\n', df_join['solar_bin'].value_counts())
@@ -49,6 +49,9 @@ class solar_power_env():
         self._data_step = 0 #row index to extract data from dataframe, starting with index 0
         p_init = self._data.iloc[0] #start with first line
         self._state = [p_init['solar_bin'], p_init['comed_bin'], 0] #initiate state
+
+        #state space shape
+        self._state_space_shape = (len(self._solar_bin)-1, len(self._comed_bin)-1, len(self._battery_bin)-1)
 
     #assemble state information
     def extract_from_table(self, item): #finds p_solar, p_comed, OR bin_solar, bin_comed
@@ -112,6 +115,7 @@ class solar_power_env():
         return tuple(self._state), abs(reward), term
 
 #testing with first 15 lines of data
+# combine_data()
 env = solar_power_env()
 random_actions = np.random.choice([0, 1], 15)
 step = 1
