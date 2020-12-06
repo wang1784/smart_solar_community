@@ -116,11 +116,11 @@ class solar_power_env():
 
 #testing with first 15 lines of data
 # combine_data()
-env = solar_power_env()
-random_actions = np.random.choice([0, 1], 15)
-step = 1
-for eachaction in random_actions:
-    print('step: ', step)
-    print('action: ', eachaction)
-    print(env.step(eachaction))
-    step += 1
+# env = solar_power_env()
+# random_actions = np.random.choice([0, 1], 15)
+# step = 1
+# for eachaction in random_actions:
+#     print('step: ', step)
+#     print('action: ', eachaction)
+#     print(env.step(eachaction))
+#     step += 1
