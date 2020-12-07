@@ -69,6 +69,7 @@ class Q_Learning_Agent(object):
                 battery_to_load_step += r
             load_step += self._env._data.iloc[i]['COMED_W']
             b0.append(battery_to_load_step/load_step)
+            print(p_grid[-1], load_step-battery_to_load_step)
             p_grid.append(load_step - battery_to_load_step)
 
             print(Transition(s1, a, r, s2))

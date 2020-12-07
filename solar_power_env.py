@@ -17,7 +17,7 @@ def combine_data():
     df_join['solar_bin'] = pd.cut(x=df_join['SOLAR_W'],
                              bins=[-0.75,0,50,100,150,200],
                              labels=[0, 1, 2, 3, 4])
-    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 20 #assume each household has 16 panels
+    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 40 #assume each household has 16 panels
     df_join['comed_bin'] = pd.cut(x = df_join['COMED_W'],
                                   bins = [1900, 2800, 3100, 4500, 6500],
                                   labels = [0, 1, 2, 3])
@@ -45,7 +45,7 @@ class solar_power_env():
         self._data = combine_data()
 
         #battery
-        self._battery_cap = 2000 #max power can be stored in the battery
+        self._battery_cap = 6000 #max power can be stored in the battery
         self._battery_bin = list(np.linspace(0, self._battery_cap, 4)) #make 3 bins for battery level
         self._battery_power = 0 #records the exact power that the battery has
 
@@ -70,11 +70,11 @@ class solar_power_env():
 
     def battery_level(self, change): #finds battery level with given change in power stored in battery
         #change: amount of change in battery, discharging if negative and charging if positive, used to find the battery bin
-        print('battery power before change: ', self._battery_power)
+        #print('battery power before change: ', self._battery_power)
         self._battery_power += change #apply the change to battery power
         self._battery_power = max(self._battery_power, 0) #prevent battery power goes below 0 after applying the change
         #find which bin current power belongs to
-        print('battery power after change:', self._battery_power)
+        #print('battery power after change:', self._battery_power)
         for each_bin_min in self._battery_bin:
             if self._battery_power >= each_bin_min:
                 bin_index = self._battery_bin.index(each_bin_min)
@@ -94,7 +94,7 @@ class solar_power_env():
             reward = min(p_solar, max(0, self._battery_cap - self._battery_power)) #max is to prevent the difference to go below 0 during learning process
         else: #if action==0, discharging
             reward = min(p_comed, self._battery_power) #discharge whatever is consumed or is left in the battery
-        print('power and reward: ', p_solar, p_comed, self._battery_power, reward)
+        #print('power and reward: ', p_solar, p_comed, self._battery_power, reward)
         return reward
 
     def battery_change(self, action, reward): #find the amount of change in battery
@@ -106,13 +106,13 @@ class solar_power_env():
 
     def step(self, action): #find the state, reward, whether reached terminal or not after taking giving action at current state
         #action: either 0 (discharging) or 1 (charging)
-        print('before action:', self._state)
+        #print('before action:', self._state)
         # get reward
         reward = self.get_reward(action) #get reward of current state and action
 
         #apply changes in state
         self.get_state(self.battery_change(action, reward)) #update the state with new data from table and the reward of current step
-        print('after action:', self._state)
+        #print('after action:', self._state)
 
         #determine if terminal
         term = True if self._data_step == (self._data.shape[0]-1) else False #if we reach the last row of the dataframe, it's terminal
