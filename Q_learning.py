@@ -17,7 +17,7 @@ Transition = namedtuple('Transition', ['state1',
 
 
 class Q_Learning_Agent(object):
-    def __init__(self, env, actions, alpha=0.5, epsilon=0.1, gamma=1):
+    def __init__(self, env, actions, alpha=0.1, epsilon=0.1, gamma=0.8):
         self._env = env #should have function that outputs state and reward
         self._actions = actions #list of actions
         self._alpha = alpha
@@ -107,11 +107,11 @@ print(test._q)
 plt.plot(range(len(b0)), b0)
 plt.ylabel('Power from battery to load / load')
 plt.xlabel('Hours')
-plt.title('Utility of battery')
+plt.title('Utility of battery, epsilon = 0.1, alpha = 0.1, gamma = 0.8')
 plt.show()
-
+#plot grid
 plt.plot(range(len(p_grid)), p_grid)
 plt.ylabel('Power from grid')
 plt.xlabel('Hours')
-plt.title('Grid power with Q-learning')
+plt.title('Grid power with Q-learning, epsilon = 0.1, alpha = 0.1 = 0.8')
 plt.show()

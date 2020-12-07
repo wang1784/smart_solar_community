@@ -17,21 +17,27 @@ def combine_data():
     df_join['solar_bin'] = pd.cut(x=df_join['SOLAR_W'],
                              bins=[-0.75,0,50,100,150,200],
                              labels=[0, 1, 2, 3, 4])
-    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 16 #assume each household has 16 panels
+    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 20 #assume each household has 16 panels
     df_join['comed_bin'] = pd.cut(x = df_join['COMED_W'],
                                   bins = [1900, 2800, 3100, 4500, 6500],
                                   labels = [0, 1, 2, 3])
+    return df_join
     #print dataframe info
     # print(df_join.iloc[7:21])
     # print(df_join.describe())
     # print('comed\n', df_join['comed_bin'].value_counts())
     # print('solar\n', df_join['solar_bin'].value_counts())
 
+def plot_df_join(df_join):
     #graph
-    # plt.plot(range(df_join.shape[0]), df_join['COMED_W'])
-    # plt.plot(range(df_join.shape[0]), df_join['SOLAR_W'])
-    # plt.show()
-    return df_join
+    plt.plot(range(df_join.shape[0]), df_join['COMED_W'], label = 'Load')
+    plt.plot(range(df_join.shape[0]), df_join['SOLAR_W'], alpha = 0.5, label = 'Solar')
+    plt.xlabel('Hours')
+    plt.ylabel('Watts')
+    plt.legend()
+    plt.title('Power consumed and collected from 20 solar panels')
+    plt.show()
+
 
 class solar_power_env():
     def __init__(self):
@@ -115,7 +121,8 @@ class solar_power_env():
         return tuple(self._state), abs(reward), term
 
 #testing with first 15 lines of data
-# combine_data()
+df_join = combine_data()
+plot_df_join(df_join)
 # env = solar_power_env()
 # random_actions = np.random.choice([0, 1], 15)
 # step = 1
