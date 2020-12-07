@@ -55,7 +55,7 @@ class Q_Learning_Agent(object):
         b0 = [battery_to_load_step/load_step]
         p_grid = [load_step - battery_to_load_step]
 
-        while i <= 8760:
+        while True:
             a = self.e_greedy_policy(s1)
             s2, r, term = self._env.step(a)
 
@@ -76,7 +76,6 @@ class Q_Learning_Agent(object):
 
             if term:
                 break
-            i += 1
 
         return transitions, b0, p_grid
 
@@ -103,7 +102,7 @@ test=Q_Learning_Agent(solar_power_env(),actions=[0,1])
 __, b0, p_grid = test.play_episode()
 print(test._q)
 
-#plot b0
+# #plot b0
 plt.plot(range(len(b0)), b0)
 plt.ylabel('Power from battery to load / load')
 plt.xlabel('Hours')
