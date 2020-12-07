@@ -49,6 +49,12 @@ class Q_Learning_Agent(object):
         s1 = self._env._state
         transitions = []
         i = 0
+        #b0
+        battery_to_load_step = 0
+        load_step = self._env._data.iloc[0]['COMED_W']
+        b0 = [battery_to_load_step/load_step]
+        p_grid = [load_step - battery_to_load_step]
+
         while i <= 8760:
             a = self.e_greedy_policy(s1)
             s2, r, term = self._env.step(a)
@@ -58,6 +64,13 @@ class Q_Learning_Agent(object):
 
             s1 = s2
 
+            #get values for b0
+            if a == 0:
+                battery_to_load_step += r
+            load_step += self._env._data.iloc[i]['COMED_W']
+            b0.append(battery_to_load_step/load_step)
+            p_grid.append(load_step - battery_to_load_step)
+
             print(Transition(s1, a, r, s2))
             transitions.append(Transition(s1, a, r, s2))
 
@@ -65,7 +78,7 @@ class Q_Learning_Agent(object):
                 break
             i += 1
 
-        return transitions
+        return transitions, b0, p_grid
 
     def learn(self, n_episodes=500):
         for _ in tqdm(range(n_episodes)):
@@ -84,31 +97,21 @@ def evaluate(agent):
 
     return episode_ids
 
-##### TONIA'S Q-LEARNING FUNCTIONS #####
-# def q_learning(self):
-#     self.initialize()
-#     time_steps = 0
-#     num_of_episode = []  # record which episode each time step is on
-#     episode_counts = 0  # start episode count from 0
-#     while time_steps <= 8000:
-#         state = self.start
-#         while state != self.goal:
-#             q_s = self.q[state[0], state[1]]
-#             action_s, __ = self.choose_action_from_q(q_s)
-#             sprime = self.get_sprime(state, action_s)
-#             reward = self.rewards[state[0], state[1], action_s]
-#             q_sprime = self.q[sprime[0], sprime[1]]
-#
-#             #update q and state
-#             self.q[state[0], state[1], action_s] = self.q[state[0], state[1], action_s] + self.alpha * (reward + max(q_sprime) - self.q[state[0], state[1], action_s]) #q update
-#             state = sprime
-#
-#             #update increments
-#             time_steps += 1
-#             num_of_episode.append(episode_counts)
-#         episode_counts += 1
-#     return num_of_episode
+
 
 test=Q_Learning_Agent(solar_power_env(),actions=[0,1])
-test.play_episode()
+__, b0, p_grid = test.play_episode()
 print(test._q)
+
+#plot b0
+plt.plot(range(len(b0)), b0)
+plt.ylabel('Power from battery to load / load')
+plt.xlabel('Hours')
+plt.title('Utility of battery')
+plt.show()
+
+plt.plot(range(len(p_grid)), p_grid)
+plt.ylabel('Power from grid')
+plt.xlabel('Hours')
+plt.title('Grid power with Q-learning')
+plt.show()
