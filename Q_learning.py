@@ -32,7 +32,7 @@ class Q_Learning_Agent(object):
                 for z in range(self._env._state_space_shape[1]):
                     self._q[(x, y, z)] = dict(action_vals)
 
-    def random_policy(self, state):
+    def random_policy(self):
         return random.choice(self._actions)
 
     def greedy_policy(self, state):
@@ -80,22 +80,8 @@ class Q_Learning_Agent(object):
 
         return transitions, b0, p_grid
 
-    def learn(self, n_episodes=500):
-        for _ in tqdm(range(n_episodes)):
-            transitions = self.play_episode()
-            self.episodes.append(transitions)
 
-def evaluate(agent):
-    agent.learn()
 
-    total_rewards = []
-    episode_ids = []
-    for e_id, episode in enumerate(agent.episodes):
-        rewards = map(lambda e: e.reward, episode)
-        total_rewards.append(sum(rewards))
-        episode_ids.extend([e_id] * len(episode))
-
-    return episode_ids
 
 
 
