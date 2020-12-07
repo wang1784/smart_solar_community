@@ -42,7 +42,7 @@ class Q_Learning_Agent(object):
         if np.random.rand() > self._epsilon:
             action = self.greedy_policy(state)
         else:
-            action = self.random_policy(state)
+            action = self.random_policy()
         return action
 
     def play_episode(self):
