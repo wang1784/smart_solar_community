@@ -75,6 +75,7 @@ class Q_Learning_Agent(object):
             print(Transition(s1, a, r, s2))
             transitions.append(Transition(s1, a, r, s2))
 
+            i += 1
             if term:
                 break
 
@@ -93,11 +94,11 @@ print(test._q)
 plt.plot(range(len(b0)), b0)
 plt.ylabel('Power from battery to load / load')
 plt.xlabel('Hours')
-plt.title('Utility of battery, epsilon = 0.1, alpha = 0.1, gamma = 0.8')
+plt.title('Utility of battery, epsilon = 0.1, alpha = 0.5, gamma = 1')
 plt.show()
 #plot grid
 plt.plot(range(len(p_grid)), p_grid)
 plt.ylabel('Power from grid')
 plt.xlabel('Hours')
-plt.title('Grid power with Q-learning, epsilon = 0.1, alpha = 0.1 = 0.8')
+plt.title('Grid power with Q-learning, epsilon = 0.1, alpha = 0.5, gamma = 1')
 plt.show()
