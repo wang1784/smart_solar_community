@@ -21,12 +21,12 @@ def combine_data():
     df_join['comed_bin'] = pd.cut(x = df_join['COMED_W'],
                                   bins = [1900, 2800, 3100, 4500, 6500],
                                   labels = [0, 1, 2, 3])
-    return df_join
     #print dataframe info
     # print(df_join.iloc[7:21])
-    # print(df_join.describe())
+    print(df_join.describe())
     # print('comed\n', df_join['comed_bin'].value_counts())
     # print('solar\n', df_join['solar_bin'].value_counts())
+    return df_join
 
 def plot_df_join(df_join):
     #graph
