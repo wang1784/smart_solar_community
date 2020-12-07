@@ -17,27 +17,35 @@ def combine_data():
     df_join['solar_bin'] = pd.cut(x=df_join['SOLAR_W'],
                              bins=[-0.75,0,50,100,150,200],
                              labels=[0, 1, 2, 3, 4])
-    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 40 #assume each household has 16 panels
+    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 20 #assume each household has 16 panels
     df_join['comed_bin'] = pd.cut(x = df_join['COMED_W'],
                                   bins = [1900, 2800, 3100, 4500, 6500],
                                   labels = [0, 1, 2, 3])
     #print dataframe info
-    # print(df_join.iloc[7:21])
+    print(df_join.iloc[7:21])
     print(df_join.describe())
     # print('comed\n', df_join['comed_bin'].value_counts())
     # print('solar\n', df_join['solar_bin'].value_counts())
     return df_join
 
 def plot_df_join(df_join):
-    #graph
+    #graph the entire dataset
     plt.plot(range(df_join.shape[0]), df_join['COMED_W'], label = 'Load')
     plt.plot(range(df_join.shape[0]), df_join['SOLAR_W'], alpha = 0.5, label = 'Solar')
     plt.xlabel('Hours')
     plt.ylabel('Watts')
     plt.legend()
-    plt.title('Power consumed and collected from 20 solar panels')
+    plt.title('Power consumed and collected from 20 solar panels 2011 - 2018')
     plt.show()
 
+    #graph the first year
+    plt.plot(range(8760), df_join.iloc[:8760]['COMED_W'], label = 'Load')
+    plt.plot(range(8760), df_join.iloc[:8760]['SOLAR_W'], alpha = 0.5, label = 'Solar')
+    plt.xlabel('Hours')
+    plt.ylabel('Watts')
+    plt.legend()
+    plt.title('Power consumed and collected from 20 solar panels 2011')
+    plt.show()
 
 class solar_power_env():
     def __init__(self):

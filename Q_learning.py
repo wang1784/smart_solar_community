@@ -17,7 +17,7 @@ Transition = namedtuple('Transition', ['state1',
 
 
 class Q_Learning_Agent(object):
-    def __init__(self, env, actions, alpha=0.1, epsilon=0.1, gamma=0.8):
+    def __init__(self, env, actions, alpha=0.5, epsilon=0.1, gamma=1):
         self._env = env #should have function that outputs state and reward
         self._actions = actions #list of actions
         self._alpha = alpha
@@ -32,7 +32,7 @@ class Q_Learning_Agent(object):
                 for z in range(self._env._state_space_shape[1]):
                     self._q[(x, y, z)] = dict(action_vals)
 
-    def random_policy(self, state):
+    def random_policy(self):
         return random.choice(self._actions)
 
     def greedy_policy(self, state):
@@ -42,7 +42,7 @@ class Q_Learning_Agent(object):
         if np.random.rand() > self._epsilon:
             action = self.greedy_policy(state)
         else:
-            action = self.random_policy(state)
+            action = self.random_policy()
         return action
 
     def play_episode(self):
