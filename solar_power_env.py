@@ -18,7 +18,7 @@ def combine_data():
     df_join['solar_bin'] = pd.cut(x=df_join['SOLAR_W'],
                              bins=[-0.75,0,50,100,150,200],
                              labels=[0, 1, 2, 3, 4])
-    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 36 #assume each household has 16 panels
+    df_join['SOLAR_W'] = df_join['SOLAR_W'] * 16 #assume each household has 16 panels
     df_join['comed_bin'] = pd.cut(x = df_join['COMED_W'],
                                   bins = np.array([1900, 2800, 3100, 4500, 6500]),
                                   labels = [0, 1, 2, 3])
@@ -54,7 +54,7 @@ class solar_power_env():
         self._data = combine_data()
 
         #battery
-        self._battery_cap = 1e8 #max power can be stored in the battery
+        self._battery_cap = 2000 #max power can be stored in the battery
         self._battery_bin = list(np.linspace(0, self._battery_cap, 6)) #make 5 bins for battery level
         self._battery_power = 0 #records the exact power that the battery has
 
@@ -132,8 +132,8 @@ class solar_power_env():
         return tuple(self._state), abs(reward), battery_change, term
 
 #testing with first 15 lines of data
-df_join = combine_data()
-plot_df_join(df_join)
+# df_join = combine_data()
+# plot_df_join(df_join)
 # env = solar_power_env()
 # random_actions = np.random.choice([0, 1], 15)
 # step = 1
