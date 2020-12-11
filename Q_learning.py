@@ -57,7 +57,7 @@ class Q_Learning_Agent(object):
 
         while True:
             a = self.e_greedy_policy(s1)
-            s2, r, term = self._env.step(a)
+            s2, r, battery_change, term = self._env.step(a)
             # print(s2, r, term)
             self._q[s1][a] = self._q[s1][a] + self._alpha * (
                         r + self._gamma * np.max(self._q[s2][a])) - self._q[s1][a]
@@ -68,6 +68,7 @@ class Q_Learning_Agent(object):
             #get values for b0
             if a == 0:
                 battery_to_load_step += r
+                if battery_change > 0: print('battery change error')
             load_step += self._env._data.iloc[i]['COMED_W']
             b0.append(battery_to_load_step/load_step)
             # print(p_grid[-1], load_step-battery_to_load_step)
@@ -75,7 +76,7 @@ class Q_Learning_Agent(object):
 
             # print(Transition(s1, a, r, s2))
             transitions.append(Transition(s1, a, r, s2))
-            battery_history.append(s1[2])
+            battery_history.append(battery_change)
 
             i += 1
             if term:
@@ -91,7 +92,13 @@ class Q_Learning_Agent(object):
 test=Q_Learning_Agent(solar_power_env(),actions=[0,1])
 __, b0, p_grid, battery = test.play_episode()
 print(test._q)
-
+neg_count = 0
+zero_count = 0
+for eachbattery in battery:
+    if eachbattery<0: neg_count += 1
+    elif eachbattery == 0: zero_count += 1
+print(neg_count/len(battery))
+print(zero_count/len(battery))
 #plot battery level
 plt.plot(range(9000), battery[:9000])
 plt.xlabel('HOUR for a year')
