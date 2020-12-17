@@ -54,9 +54,10 @@ class Q_Learning_Agent(object):
         battery_to_load_step = 0
         load_history = []
         load_step = 0
-        # load_step = self._env._data.iloc[0]['COMED_W']
-        # b0 = [battery_to_load_step/load_step]
-        # p_grid = [load_step - battery_to_load_step]
+        # b_hourly_history = []
+        # b_hourly_step = 0
+        # load_hourly_history = []
+        # load_hourly_step = 0
 
         while True:
             a = self.e_greedy_policy(s1)
@@ -67,6 +68,7 @@ class Q_Learning_Agent(object):
 
             s1 = s2
 
+            # if battery_change > 0:
 
             #get values for b0
             if days_count == 8760:
@@ -115,7 +117,7 @@ def parameter_tuning(epsilon, alpha, gamma):
                 g0_gamma.append(min(g0))
             b0_alpha.append(b0_gamma)
             g0_alpha.append(g0_gamma)
-            # b0_best_gamma = b0_gamma.index(max(b0_gamma))
+            b0_best_gamma = b0_gamma.index(max(b0_gamma))
             g0_best_gamma = g0_gamma.index(min(g0_gamma))
         b0_epsilon.append(b0_alpha)
         g0_epsilon.append(g0_alpha)
@@ -130,41 +132,50 @@ def parameter_tuning(epsilon, alpha, gamma):
 
 
 ##########################################################
-epsilon_tune = np.arange(0, 1.1, 0.1)
-alpha_tune = np.arange(0, 1.1, 0.1)
-gamma_tune = np.arange(0, 1.1, 0.1)
+# epsilon_tune = [0, 0.25, 0.5, 0.75, 1]
+# alpha_tune = [0.1, 0.3, 0.5, 0.7]
+# gamma_tune = np.arange(0.8, 1.1, 0.1)
+#
+# b0, g0, b0_best, g0_best = parameter_tuning(epsilon_tune, alpha_tune, gamma_tune)
+# print('the best parameters are: ', g0_best)
+plot_policy = [0, 0.1, 1]
+b_epsilon = []
+g_epsilon = []
+for eachepsilon in plot_policy:
+    test=Q_Learning_Agent(solar_power_env(),actions=[0,1],
+                          epsilon = eachepsilon, alpha = 0.1, gamma = 1)
+    __, b0, g0 = test.play_episode()
+    b_epsilon.append(b0)
+    g_epsilon.append(g0)
 
-__, __, b0_best, g0_best = parameter_tuning(epsilon_tune, alpha_tune, gamma_tune)
-print('the best parameters are: ', g0_best)
+for eachepsilon in range(len(plot_policy)):
+    current_b = b_epsilon[eachepsilon]
+    plt.plot(range(len(current_b)), current_b, label = plot_policy[eachepsilon])
+    plt.ylabel('Power from battery to load / load')
+    plt.xlabel('Year')
+    plt.title('Utility of Battery')
+plt.legend()
+plt.show()
 
-test=Q_Learning_Agent(solar_power_env(),actions=[0,1],
-                      epsilon = g0_best[0], alpha = g0_best[1], gamma = g0_best[2])
-__, b0, g0 = test.play_episode()
+for eachepsilon in range(len(plot_policy)):
+    current_g = g_epsilon[eachepsilon]
+    plt.plot(range(len(current_g)), current_g, label = plot_policy[eachepsilon])
+    plt.ylabel('Power from grid')
+    plt.xlabel('Year')
+    plt.title('Grid power')
+plt.legend()
+plt.show()
 
-# check = Q_Learning_Agent(solar_power_env(),actions=[0,1])
-# __, b0, g0 = check.play_episode()
-# neg_count = 0
-# zero_count = 0
-# for eachbattery in battery:
-#     if eachbattery<0: neg_count += 1
-#     elif eachbattery == 0: zero_count += 1
-# print(neg_count/len(battery))
-# print(zero_count/len(battery))
-#plot battery level
-# plt.plot(range(9000), battery[:9000])
-# plt.xlabel('HOUR for a year')
-# plt.ylabel('Battery level')
+#
+# #plot b0
+# plt.plot(range(len(b0)), b0)
+# plt.ylabel('Power from battery to load / load')
+# plt.xlabel('Hours')
+# plt.title('Utility of Battery with alpha=0.1, epsilon=0.1, gamma=1')
 # plt.show()
-
-#plot b0
-plt.plot(range(len(b0)), b0)
-plt.ylabel('Power from battery to load / load')
-plt.xlabel('Hours')
-plt.title('Utility of Battery with alpha=0.5, epsilon=0.1, gamma=1')
-plt.show()
-#plot grid
-plt.plot(range(len(g0)), g0)
-plt.ylabel('Power from grid')
-plt.xlabel('Hours')
-plt.title('Grid power with alpha=0.5, epsilon=0.1, gamma=1')
-plt.show()
+# #plot grid
+# plt.plot(range(len(g0)), g0)
+# plt.ylabel('Power from grid')
+# plt.xlabel('Hours')
+# plt.title('Grid power with alpha=0.1, epsilon=0.1, gamma=1')
+# plt.show()

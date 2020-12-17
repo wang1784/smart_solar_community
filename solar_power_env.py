@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 # from get_solar_data import get_solar_data
-#
+
+### SUPPORT FUNCTIONS ###
 def combine_data():
     #get data from comed and solar
     df_comed = get_comed_data().account_hourly() #call function to get comed data
@@ -48,10 +49,40 @@ def plot_df_join(df_join):
     plt.title('Power consumed and collected from 20 solar panels 2011')
     plt.show()
 
+def split_year():
+    #split the given df into sub-dfs according to year
+    df = combine_data()
+    df_index = pd.Series(df.index).str.strip()
+    year = []
+    for eachindex in df_index:
+        year.append(eachindex[:4])
+    # data_datetime = pd.to_datetime(df.index, format = '%Y%m%d %H%M%S')
+    # data_year = data_datetime.dt.years
+    df_temp = df.copy()
+    df_temp['Year'] = year
+    agg = df_temp.groupby(['Year'])
+    year_dfs = []
+    start_end = []
+    for year, group in agg:
+        if group.shape[0]>1:
+            year_dfs.append(group)
+            start_end.append([group.iloc[0, 0], group.iloc[-1,0]])
+    #find years that has smooth transitions in COMED_W
+    year_close = {}
+    for eachyear in range(len(start_end)):
+        year_close[eachyear] = []
+        for eachother in range(len(start_end)):
+            if eachyear != eachother and abs(start_end[eachyear][1] - start_end[eachother][0]) < 150:
+                year_close[eachyear].append(eachother)
+    return year_dfs, year_close
+
+### ENVIRONMENT ###
 class solar_power_env():
     def __init__(self):
         #get dataframe
+        # self._data = self.generate_episode()
         self._data = combine_data()
+        # self._data = pd.concat([temp, temp])
 
         #battery
         self._battery_cap = 2000 #max power can be stored in the battery
@@ -67,6 +98,21 @@ class solar_power_env():
 
         #state space shape
         self._state_space_shape = [len(self._solar_bin)-1, len(self._comed_bin)-1, len(self._battery_bin)-1]
+
+    def generate_episode(self):
+        year_dfs, closeness_dict = split_year()
+        print(closeness_dict)
+        # num_year = len(year_dfs)
+        # year_choose = np.random.choice(range(num_year), 3)
+        # print(year_choose)
+        # df_selected = [combine_data()]
+        year_choose = [0, 1, 2, 3, 4, 5, 1, 4, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]
+        df_selected = []
+        for eachchosen in year_choose:
+            df_selected.append(year_dfs[eachchosen])
+            # print(year_dfs[eachchosen].shape[0])
+        df_combined = pd.concat(df_selected)
+        return df_combined
 
     #assemble state information
     def extract_from_table(self, item): #finds p_solar, p_comed, OR bin_solar, bin_comed
@@ -133,8 +179,13 @@ class solar_power_env():
 
 #testing with first 15 lines of data
 # df_join = combine_data()
+split_year()
 # plot_df_join(df_join)
 # env = solar_power_env()
+# combined = env.generate_episode()
+# print(combined[8758:8786])
+# print(combined[17515:17524])
+# print(combined[26278:26284])
 # random_actions = np.random.choice([0, 1], 15)
 # step = 1
 # for eachaction in random_actions:
