@@ -76,7 +76,7 @@ def split_year():
             describe_index = group.describe().index
     df_comed_year_describe = pd.DataFrame(df_comed_year_describe,
                                           index = describe_index)
-    # print(df_comed_year_describe)
+    print(df_comed_year_describe)
     #find years that has smooth transitions in COMED_W
     year_close = {}
     for eachyear in range(len(start_end)):
@@ -232,7 +232,7 @@ class solar_power_env():
 
 #testing with first 15 lines of data
 # combine_data()
-# split_year()
+split_year()
 # plot_df_join(df_join)
 # env = solar_power_env()
 # combined = env.generate_episode()
