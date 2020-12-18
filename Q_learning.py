@@ -17,7 +17,7 @@ Transition = namedtuple('Transition', ['state1',
 
 
 class Q_Learning_Agent(object):
-    def __init__(self, env, actions, alpha=0.5, epsilon=0.1, gamma=1):
+    def __init__(self, env, actions, alpha=0.1, epsilon=0.1, gamma=1):
         self._env = env #should have function that outputs state and reward
         self._actions = actions #list of actions
         self._alpha = alpha
@@ -90,6 +90,7 @@ class Q_Learning_Agent(object):
         return transitions, b0, g0
 
     def random_baseline(self):
+        print('baseline________________')
         s1 = self._env._state
         transitions = []
         i = 0
@@ -102,6 +103,7 @@ class Q_Learning_Agent(object):
         while True:
             a = self.random_policy()
             s2, r, battery_change, term = self._env.step(a)
+            print(i, term)
             s1 = s2
 
             # get values for b0
@@ -165,59 +167,81 @@ def parameter_tuning(epsilon, alpha, gamma):
 # b0, g0, b0_best, g0_best = parameter_tuning(epsilon_tune, alpha_tune, gamma_tune)
 # print('the best parameters are: ', g0_best)
 
-#compare q-learning policies
-plot_policy = [0, 0.1, 1]
-policy_label = ['greedy', 'epsilon greedy', 'random']
-b_epsilon = []
-g_epsilon = []
-for eachepsilon in plot_policy:
-    test=Q_Learning_Agent(solar_power_env(),actions=[0,1],
-                          epsilon = eachepsilon, alpha = 0.1, gamma = 1)
-    __, b0, g0 = test.play_episode()
-    b_epsilon.append(b0)
-    g_epsilon.append(g0)
-
-for eachepsilon in range(len(plot_policy)):
-    current_b = b_epsilon[eachepsilon]
-    plt.plot(range(len(current_b)), current_b, label = policy_label[eachepsilon])
-    plt.ylabel('Power from battery to load / load')
-    plt.xlabel('Year')
-    plt.title('Utility of Battery')
-plt.legend('Policies')
-plt.show()
-
-for eachepsilon in range(len(plot_policy)):
-    current_g = g_epsilon[eachepsilon]
-    plt.plot(range(len(current_g)), current_g, label = policy_label[eachepsilon])
-    plt.ylabel('Power from grid')
-    plt.xlabel('Year')
-    plt.title('Grid power')
-plt.legend('Policies')
-plt.show()
-
-#compare random baseline and q-learning
-test_random=Q_Learning_Agent(solar_power_env(),actions=[0,1],
-                          epsilon = 0.1, alpha = 0.1, gamma = 1)
-__, b0_random, g0_random = test_random.random_baseline()
-
+##### default parameters #####
+default_alpha = 0.1
+default_gamma = 1
+default_epsilon = 0.1
+default = Q_Learning_Agent(solar_power_env(), actions = [0, 1],
+                           epsilon = default_epsilon, alpha = default_alpha, gamma = default_gamma)
+__, b_default, g_default = default.play_episode()
 #b
-b_epsilon_greedy = b_epsilon[1]
-plt.plot(range(len(b_epsilon_greedy)), b_epsilon_greedy, label = 'epsilon-greedy')
-plt.plot(range(len(b0_random)), b0_random, label = 'random')
+plt.plot(range(len(b_default)), b_default)
 plt.ylabel('Power from battery to load / load')
 plt.xlabel('Year')
-plt.title('Utility of Battery')
-plt.legend()
+plt.title('Utility of Battery (Random Year)')
 plt.show()
 #g
-g_epsilon_greedy = g_epsilon[1]
-plt.plot(range(len(g_epsilon_greedy)), g_epsilon_greedy, label = 'epsilon-greedy')
-plt.plot(range(len(g0_random)), g0_random, label = 'random')
+plt.plot(range(len(g_default)), g_default)
 plt.ylabel('Power from grid')
 plt.xlabel('Year')
-plt.title('Grid power')
-plt.legend()
+plt.title('Grid power (Random Year)')
 plt.show()
+
+##### compare q-learning policies #####
+# plot_policy = [0, 0.1, 1]
+# policy_label = ['greedy', 'epsilon greedy', 'random']
+# b_epsilon = []
+# g_epsilon = []
+# for eachepsilon in plot_policy:
+#     test=Q_Learning_Agent(solar_power_env(),actions=[0,1],
+#                           epsilon = eachepsilon, alpha = 0.1, gamma = 1)
+#     __, b0, g0 = test.play_episode()
+#     b_epsilon.append(b0)
+#     g_epsilon.append(g0)
+#
+# for eachepsilon in range(len(plot_policy)):
+#     current_b = b_epsilon[eachepsilon]
+#     plt.plot(range(len(current_b)), current_b, label = policy_label[eachepsilon])
+#     plt.ylabel('Power from battery to load / load')
+#     plt.xlabel('Year')
+# plt.title('Utility of Battery (Original Data Frame)')
+# plt.legend(labels = policy_label)
+# plt.show()
+#
+# for eachepsilon in range(len(plot_policy)):
+#     current_g = g_epsilon[eachepsilon]
+#     plt.plot(range(len(current_g)), current_g, label = policy_label[eachepsilon])
+#     plt.ylabel('Power from grid')
+#     plt.xlabel('Year')
+# plt.title('Grid power (Original Data Frame)')
+# plt.legend(labels = policy_label)
+# plt.show()
+# #
+# # #compare random baseline and q-learning
+# test_random=Q_Learning_Agent(solar_power_env(),actions=[0,1],
+#                           epsilon = 0.1, alpha = 0.1, gamma = 1)
+# __, b0_random, g0_random = test_random.random_baseline()
+#
+# #b
+# # b_epsilon_greedy = b_epsilon[1]
+# # plt.plot(range(len(b_epsilon_greedy)), b_epsilon_greedy, label = 'epsilon-greedy')
+# plt.plot(range(len(b_default)), b_default, label = 'Q-learning')
+# plt.plot(range(len(b0_random)), b0_random, label = 'random')
+# plt.ylabel('Power from battery to load / load')
+# plt.xlabel('Year')
+# plt.title('Utility of Battery (Original Data Frame)')
+# plt.legend()
+# plt.show()
+# #g
+# # g_epsilon_greedy = g_epsilon[1]
+# # plt.plot(range(len(g_epsilon_greedy)), g_epsilon_greedy, label = 'epsilon-greedy')
+# plt.plot(range(len(g_default)), g_default, label = 'Q-learning')
+# plt.plot(range(len(g0_random)), g0_random, label = 'random')
+# plt.ylabel('Power from grid')
+# plt.xlabel('Year')
+# plt.title('Grid power (Original Data Frame)')
+# plt.legend()
+# plt.show()
 #
 # #plot b0
 # plt.plot(range(len(b0)), b0)

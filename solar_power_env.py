@@ -2,6 +2,7 @@ from get_comed_data import get_comed_data
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+pd.set_option('display.max_columns', 10)
 # from get_solar_data import get_solar_data
 
 ### SUPPORT FUNCTIONS ###
@@ -14,6 +15,7 @@ def combine_data():
     df_solar[df_solar<0] = 0 #make all the negative values 0 because negative solar generation is meaningless
     df_join = df_comed.join(df_solar, how = 'inner', sort = True) #join two dataframes according to date and time
     df_join['COMED_W'] = df_join['COMED_W']
+    # print(df_join.describe())
 
     #discretize data
     df_join['solar_bin'] = pd.cut(x=df_join['SOLAR_W'],
@@ -28,6 +30,7 @@ def combine_data():
     # print(df_join.describe())
     # print('comed\n', df_join['comed_bin'].value_counts())
     # print('solar\n', df_join['solar_bin'].value_counts())
+    # print(df_join.head())
     return df_join
 
 def plot_df_join(df_join):
@@ -63,11 +66,17 @@ def split_year():
     agg = df_temp.groupby(['Year'])
     year_dfs = []
     start_end = []
+    df_comed_year_describe = {}
     for year, group in agg:
         if group.shape[0]>1:
             year_dfs.append(group)
+            # print(year)
+            df_comed_year_describe[year] = group.describe()['COMED_W']
             start_end.append([group.iloc[0, 0], group.iloc[-1,0]])
-
+            describe_index = group.describe().index
+    df_comed_year_describe = pd.DataFrame(df_comed_year_describe,
+                                          index = describe_index)
+    # print(df_comed_year_describe)
     #find years that has smooth transitions in COMED_W
     year_close = {}
     for eachyear in range(len(start_end)):
@@ -75,7 +84,7 @@ def split_year():
         for eachother in range(len(start_end)):
             if eachyear != eachother and abs(start_end[eachyear][1] - start_end[eachother][0]) < 150:
                 year_close[eachyear].append(eachother)
-    return year_dfs, year_close
+    return year_dfs
 
 def split_month():
     df = combine_data()
@@ -104,8 +113,8 @@ def split_month():
 class solar_power_env():
     def __init__(self):
         #get dataframe
-        # self._data = self.generate_episode()
         self._data = self.generate_episode()
+        # self._data = combine_data()
         # self._data = pd.concat([temp, temp])
 
         #battery
@@ -128,34 +137,30 @@ class solar_power_env():
         choose_month_year = np.random.choice(range(num_row), 1)[0]
         return df_month[choose_month_year]
 
-    def generate_year(self, month_dfs):
-        df_year_choices = []
-        for eachmonth in range(len(month_dfs)):
-            month_year_dfs = month_dfs[eachmonth]
-            month_choice = self.choose_month(month_year_dfs)
-            df_year_choices.append(month_choice)
-            # print(month_choice.shape)
-        df_year = pd.concat(df_year_choices)
+    def generate_year(self, dfs):
+        month_or_year = len(dfs)
+        if month_or_year == 12:
+            df_year_choices = []
+            for eachmonth in range(month_or_year):
+                month_year_dfs = dfs[eachmonth]
+                month_choice = self.choose_month(month_year_dfs)
+                df_year_choices.append(month_choice)
+                # print(month_choice.shape)
+            df_year = pd.concat(df_year_choices)
+        elif month_or_year == 7:
+            year_choice = np.random.choice(range(month_or_year), 1)[0]
+            df_year = dfs[year_choice]
         return df_year
 
     def generate_episode(self):
-        month_dfs = split_month()
-        df_episode = []
-        for eachyear in range(15):
+        month_dfs = split_year()
+        print(len(month_dfs))
+        df_episode = [combine_data()]
+        for eachyear in range(20):
             df_each_year = self.generate_year(month_dfs)
             df_episode.append(df_each_year)
         df_episode = pd.concat(df_episode)
-        # print(df_episode.shape)
-        # num_year = len(year_dfs)
-        # year_choose = np.random.choice(range(num_year), 3)
-        # print(year_choose)
-        # df_selected = [combine_data()]
-        # year_choose = [0, 1, 2, 3, 4, 5, 1, 4, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]
-        # df_selected = []
-        # for eachchosen in year_choose:
-        #     df_selected.append(year_dfs[eachchosen])
-        #     # print(year_dfs[eachchosen].shape[0])
-        # df_combined = pd.concat(df_selected)
+
         return df_episode
 
     #assemble state information
@@ -207,6 +212,8 @@ class solar_power_env():
     def step(self, action): #find the state, reward, whether reached terminal or not after taking giving action at current state
         #action: either 0 (discharging) or 1 (charging)
         #print('before action:', self._state)
+        # print('data step', self._data_step)
+
         # get reward
         reward = self.get_reward(action) #get reward of current state and action
 
@@ -217,13 +224,15 @@ class solar_power_env():
 
         #determine if terminal
         term = True if self._data_step == (self._data.shape[0]-1) else False #if we reach the last row of the dataframe, it's terminal
+        # if self._data_step > 61355:
+        #     print(self._data.iloc[self._data_step], term)
         self._data_step += 1 #update the row index
 
         return tuple(self._state), abs(reward), battery_change, term
 
 #testing with first 15 lines of data
-# df_join = combine_data()
-# split_month()
+# combine_data()
+# split_year()
 # plot_df_join(df_join)
 # env = solar_power_env()
 # combined = env.generate_episode()
