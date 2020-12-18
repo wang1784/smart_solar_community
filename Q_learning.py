@@ -74,21 +74,47 @@ class Q_Learning_Agent(object):
             if days_count == 8760:
                 battery_to_load_history.append(battery_to_load_step)
                 load_history.append(load_step)
-                # print('appending values: ', battery_to_load_step, load_step)
                 days_count = 0
                 battery_to_load_step = 0
                 load_step = 0
             if a == 0:
                 battery_to_load_step += r
-            #     if battery_change > 0: print('battery change error')
             load_step += self._env._data.iloc[i]['COMED_W']
-            # b0.append(battery_to_load_step/load_step)
-            # # print(p_grid[-1], load_step-battery_to_load_step)
-            # p_grid.append(load_step - battery_to_load_step)
-
-            # print(Transition(s1, a, r, s2))
             transitions.append(Transition(s1, a, r, s2))
-            # battery_history.append(battery_change)
+            days_count += 1
+            i += 1
+            if term:
+                break
+        b0 = np.divide(battery_to_load_history, load_history)
+        g0 = np.subtract(load_history, battery_to_load_history)
+        return transitions, b0, g0
+
+    def random_baseline(self):
+        s1 = self._env._state
+        transitions = []
+        i = 0
+        days_count = 0
+        battery_to_load_history = []
+        battery_to_load_step = 0
+        load_history = []
+        load_step = 0
+
+        while True:
+            a = self.random_policy()
+            s2, r, battery_change, term = self._env.step(a)
+            s1 = s2
+
+            # get values for b0
+            if days_count == 8760:
+                battery_to_load_history.append(battery_to_load_step)
+                load_history.append(load_step)
+                days_count = 0
+                battery_to_load_step = 0
+                load_step = 0
+            if a == 0:
+                battery_to_load_step += r
+            load_step += self._env._data.iloc[i]['COMED_W']
+            transitions.append(Transition(s1, a, r, s2))
             days_count += 1
             i += 1
             if term:
@@ -138,7 +164,10 @@ def parameter_tuning(epsilon, alpha, gamma):
 #
 # b0, g0, b0_best, g0_best = parameter_tuning(epsilon_tune, alpha_tune, gamma_tune)
 # print('the best parameters are: ', g0_best)
+
+#compare q-learning policies
 plot_policy = [0, 0.1, 1]
+policy_label = ['greedy', 'epsilon greedy', 'random']
 b_epsilon = []
 g_epsilon = []
 for eachepsilon in plot_policy:
@@ -150,22 +179,45 @@ for eachepsilon in plot_policy:
 
 for eachepsilon in range(len(plot_policy)):
     current_b = b_epsilon[eachepsilon]
-    plt.plot(range(len(current_b)), current_b, label = plot_policy[eachepsilon])
+    plt.plot(range(len(current_b)), current_b, label = policy_label[eachepsilon])
     plt.ylabel('Power from battery to load / load')
     plt.xlabel('Year')
     plt.title('Utility of Battery')
-plt.legend()
+plt.legend('Policies')
 plt.show()
 
 for eachepsilon in range(len(plot_policy)):
     current_g = g_epsilon[eachepsilon]
-    plt.plot(range(len(current_g)), current_g, label = plot_policy[eachepsilon])
+    plt.plot(range(len(current_g)), current_g, label = policy_label[eachepsilon])
     plt.ylabel('Power from grid')
     plt.xlabel('Year')
     plt.title('Grid power')
-plt.legend()
+plt.legend('Policies')
 plt.show()
 
+#compare random baseline and q-learning
+test_random=Q_Learning_Agent(solar_power_env(),actions=[0,1],
+                          epsilon = 0.1, alpha = 0.1, gamma = 1)
+__, b0_random, g0_random = test_random.random_baseline()
+
+#b
+b_epsilon_greedy = b_epsilon[1]
+plt.plot(range(len(b_epsilon_greedy)), b_epsilon_greedy, label = 'epsilon-greedy')
+plt.plot(range(len(b0_random)), b0_random, label = 'random')
+plt.ylabel('Power from battery to load / load')
+plt.xlabel('Year')
+plt.title('Utility of Battery')
+plt.legend()
+plt.show()
+#g
+g_epsilon_greedy = g_epsilon[1]
+plt.plot(range(len(g_epsilon_greedy)), g_epsilon_greedy, label = 'epsilon-greedy')
+plt.plot(range(len(g0_random)), g0_random, label = 'random')
+plt.ylabel('Power from grid')
+plt.xlabel('Year')
+plt.title('Grid power')
+plt.legend()
+plt.show()
 #
 # #plot b0
 # plt.plot(range(len(b0)), b0)

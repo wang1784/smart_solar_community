@@ -67,6 +67,7 @@ def split_year():
         if group.shape[0]>1:
             year_dfs.append(group)
             start_end.append([group.iloc[0, 0], group.iloc[-1,0]])
+
     #find years that has smooth transitions in COMED_W
     year_close = {}
     for eachyear in range(len(start_end)):
@@ -76,12 +77,35 @@ def split_year():
                 year_close[eachyear].append(eachother)
     return year_dfs, year_close
 
+def split_month():
+    df = combine_data()
+    df_index = pd.Series(df.index).str.strip()
+    month = []
+    year = []
+    for eachindex in df_index:
+        month.append(eachindex[5:7])
+        year.append(eachindex[:4])
+    df_temp = df.copy()
+    df_temp['Month'] = month
+    df_temp['Year'] = year
+    agg_month = df_temp.groupby(['Month'])
+    month_dfs = []
+    for month, month_group in agg_month:
+        month_year = []
+        agg_year = month_group.groupby(['Year'])
+        for year, year_group in agg_year:
+            if year_group.shape[0]>1:
+                month_year.append(year_group)
+        month_dfs.append(month_year)
+    return month_dfs
+
+
 ### ENVIRONMENT ###
 class solar_power_env():
     def __init__(self):
         #get dataframe
         # self._data = self.generate_episode()
-        self._data = combine_data()
+        self._data = self.generate_episode()
         # self._data = pd.concat([temp, temp])
 
         #battery
@@ -99,20 +123,40 @@ class solar_power_env():
         #state space shape
         self._state_space_shape = [len(self._solar_bin)-1, len(self._comed_bin)-1, len(self._battery_bin)-1]
 
+    def choose_month(self, df_month):
+        num_row = len(df_month)
+        choose_month_year = np.random.choice(range(num_row), 1)[0]
+        return df_month[choose_month_year]
+
+    def generate_year(self, month_dfs):
+        df_year_choices = []
+        for eachmonth in range(len(month_dfs)):
+            month_year_dfs = month_dfs[eachmonth]
+            month_choice = self.choose_month(month_year_dfs)
+            df_year_choices.append(month_choice)
+            # print(month_choice.shape)
+        df_year = pd.concat(df_year_choices)
+        return df_year
+
     def generate_episode(self):
-        year_dfs, closeness_dict = split_year()
-        print(closeness_dict)
+        month_dfs = split_month()
+        df_episode = []
+        for eachyear in range(15):
+            df_each_year = self.generate_year(month_dfs)
+            df_episode.append(df_each_year)
+        df_episode = pd.concat(df_episode)
+        # print(df_episode.shape)
         # num_year = len(year_dfs)
         # year_choose = np.random.choice(range(num_year), 3)
         # print(year_choose)
         # df_selected = [combine_data()]
-        year_choose = [0, 1, 2, 3, 4, 5, 1, 4, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]
-        df_selected = []
-        for eachchosen in year_choose:
-            df_selected.append(year_dfs[eachchosen])
-            # print(year_dfs[eachchosen].shape[0])
-        df_combined = pd.concat(df_selected)
-        return df_combined
+        # year_choose = [0, 1, 2, 3, 4, 5, 1, 4, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6]
+        # df_selected = []
+        # for eachchosen in year_choose:
+        #     df_selected.append(year_dfs[eachchosen])
+        #     # print(year_dfs[eachchosen].shape[0])
+        # df_combined = pd.concat(df_selected)
+        return df_episode
 
     #assemble state information
     def extract_from_table(self, item): #finds p_solar, p_comed, OR bin_solar, bin_comed
@@ -179,7 +223,7 @@ class solar_power_env():
 
 #testing with first 15 lines of data
 # df_join = combine_data()
-split_year()
+# split_month()
 # plot_df_join(df_join)
 # env = solar_power_env()
 # combined = env.generate_episode()
